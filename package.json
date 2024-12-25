@@ -4,9 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
+  "build": "echo 'Build script' ",
+  "start": "node server.js",
+  "dev": "nodemon server.js"
+},
+
   "keywords": [],
   "author": "",
   "license": "ISC",
