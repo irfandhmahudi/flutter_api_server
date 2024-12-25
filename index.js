@@ -19,10 +19,22 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Menyesuaikan CORS untuk menerima permintaan dari semua asal
+const allowedOrigins = [
+  "http://localhost:3000", // Untuk emulator Android
+  "http://10.0.2.2:3000",
+  "http://192.168.1.3:3000",
+  "http://127.0.0.1:3000",
+  "*",
+];
 app.use(
   cors({
-    origin: "*", // Mengizinkan permintaan dari semua origin (IP/Domain)
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true, // Jika Anda menggunakan cookies atau header khusus
   })
 );
