@@ -19,16 +19,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = "*";
+// Menyesuaikan CORS untuk menerima permintaan dari semua asal
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "*", // Mengizinkan permintaan dari semua origin (IP/Domain)
     credentials: true, // Jika Anda menggunakan cookies atau header khusus
   })
 );
