@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware untuk CORS
 app.use(
   cors({
-    origin: "https://flutter-ui-xi.vercel.app",
+    origin: "http://192.168.1.7:3000",
     credentials: true,
   })
 );
