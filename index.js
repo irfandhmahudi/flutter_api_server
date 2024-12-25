@@ -19,13 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = [
-  "http://localhost:3000", // Untuk emulator Android
-  "http://10.0.2.2:3000",
-  "http://192.168.1.4:3000",
-  "http://127.0.0.1:3000",
-  "*",
-];
+const allowedOrigins = "*";
 app.use(
   cors({
     origin: (origin, callback) => {
