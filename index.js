@@ -50,7 +50,7 @@ app.use("/api/avatar", avatarRoutes);
 app.use("/api/product", productRoutes);
 
 const PORT = process.env.PORT || 5000;
-const HOST = "192.168.1.2"; // Alamat IP lokal Anda
+const HOST = "192.168.1.5"; // Alamat IP lokal Anda
 
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
