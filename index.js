@@ -48,11 +48,9 @@ app.use("/api/avatar", avatarRoutes);
 // Route for products
 app.use("/api/product", productRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
+const PORT = process.env.PORT || 5000;
+const HOST = "192.168.1.5";
 
-// Menjalankan express sebagai fungsi serverless untuk Vercel
-export default (req, res) => {
-  app(req, res);
-};
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+});
