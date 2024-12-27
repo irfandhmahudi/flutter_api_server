@@ -3,7 +3,8 @@ import User from "../models/userModels.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt; // Mendapatkan token dari cookie
+    const token =
+      req.headers["authorization"]?.split(" ")[1] || req.cookies.jwt; // Mendapatkan token dari cookie
     if (!token) {
       return res
         .status(401)
