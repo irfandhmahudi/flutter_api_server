@@ -100,15 +100,8 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { status } = req.query;
-
-    // Validasi status jika diberikan
-    if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({ success: false, error: "Invalid status" });
-    }
-
-    const filter = status ? { status } : {}; // Filter berdasarkan status jika ada
-    const products = await Product.find(filter);
+    // Mengambil semua produk tanpa filter
+    const products = await Product.find();
     res.status(200).json({ success: true, data: products });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

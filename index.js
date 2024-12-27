@@ -19,13 +19,15 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware untuk CORS
-app.use(
-  cors({
-    origin: "http://192.168.1.7:3000",
-    credentials: true,
-  })
-);
+// Konfigurasi CORS
+const corsOptions = {
+  origin: "http://example.com", // Ganti dengan origin yang diizinkan
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"],
+  credentials: true, // Izinkan pengiriman cookies
+};
+
+app.use(cors(corsOptions));
 
 // Route for users
 app.use("/api/user", userRoutes);
