@@ -19,14 +19,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Konfigurasi CORS
-const corsOptions = {
-  origin: "https://flutter-ui-eight.vercel.app", // Ganti dengan origin yang diizinkan
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type"],
-  credentials: true, // Izinkan pengiriman cookies
-};
-
+app.use(
+  cors({
+    origin: "https://flutter-ui-eight.vercel.app", // URL frontend Anda
+    credentials: true, // Ini memungkinkan cookies dikirim bersama permintaan
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 app.use(cors(corsOptions));
 
 // Route for users
