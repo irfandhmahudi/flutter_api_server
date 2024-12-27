@@ -25,7 +25,6 @@ app.use(
     credentials: true, // Ini memungkinkan cookies dikirim bersama permintaan
   })
 );
-app.use(cors(corsOptions));
 
 // Route for users
 app.use("/api/user", userRoutes);
