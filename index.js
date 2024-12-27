@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "https://flutter-ousejbj8o-irfandhamhudis-projects.vercel.app", // URL frontend Anda
-    credentials: include, // Ini memungkinkan cookies dikirim bersama permintaan
+    credentials: true, // Ini memungkinkan cookies dikirim bersama permintaan
   })
 );
 
