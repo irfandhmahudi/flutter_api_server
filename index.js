@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Konfigurasi CORS
 const corsOptions = {
-  origin: "http://example.com", // Ganti dengan origin yang diizinkan
+  origin: "https://flutte-ui.vercel.app", // Ganti dengan origin yang diizinkan
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type"],
   credentials: true, // Izinkan pengiriman cookies
