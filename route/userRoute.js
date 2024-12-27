@@ -29,7 +29,7 @@ router.post("/login-admin", loginAdmin);
 router.get("/me", authMiddleware, getMe);
 
 // Get all users
-router.get("/all", authMiddleware, getAllUsers);
+router.get("/all", getAllUsers);
 
 // Logout
 router.post("/logout", logoutUser);
