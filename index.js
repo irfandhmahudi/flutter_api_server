@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Konfigurasi CORS
 const corsOptions = {
-  origin: "https://flutter-ui-psi.vercel.app/", // Ganti dengan origin yang diizinkan
+  origin: "https://flutter-ui-psi.vercel.app", // Ganti dengan origin yang diizinkan
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type"],
   credentials: true, // Izinkan pengiriman cookies
