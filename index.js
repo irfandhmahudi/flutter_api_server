@@ -23,7 +23,6 @@ app.use(
   cors({
     origin: "https://flutter-ui-eight.vercel.app", // URL frontend Anda
     credentials: true, // Ini memungkinkan cookies dikirim bersama permintaan
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 app.use(cors(corsOptions));
