@@ -21,8 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "https://flutter-ousejbj8o-irfandhamhudis-projects.vercel.app", // URL frontend Anda
-    credentials: true, // Ini memungkinkan cookies dikirim bersama permintaan
+    origin: "https://flutter-ousejbj8o-irfandhamhudis-projects.vercel.app", // Your frontend URL
+    credentials: true, // Allows cookies to be sent
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"], // Explicitly allow the cookie header
   })
 );
 
