@@ -24,7 +24,7 @@ import cors from "cors";
 app.use(
   cors({
     origin: [
-      "https://flutter-ui-eight.vercel.app", // Untuk aplikasi di Vercel
+      // "https://flutter-ui-eight.vercel.app",
       "https://flutter-ui-git-main-irfandhamhudis-projects.vercel.app",
     ],
     credentials: true, // Membolehkan cookies dikirimkan
