@@ -24,12 +24,11 @@ import cors from "cors";
 app.use(
   cors({
     origin: [
-      "https://flutter-ui-eight.vercel.app", // URL untuk aplikasi yang dihosting di Vercel
-      "http://localhost:3000", // URL untuk aplikasi yang berjalan di localhost, port 3000
-      "http://localhost:8080", // URL emulator lokal (contoh)
-      "http://127.0.0.1:3000", // Untuk aplikasi yang berjalan pada localhost (dengan IP)
+      "https://flutter-ui-eight.vercel.app", // Untuk aplikasi di Vercel
+      "http://localhost:3000", // Untuk aplikasi di localhost (desktop)
+      "http://10.0.2.2:3000", // Untuk Android Emulator yang mengakses localhost pada komputer host
     ],
-    credentials: true, // Allows cookies to be sent
+    credentials: true, // Membolehkan cookies dikirimkan
   })
 );
 
