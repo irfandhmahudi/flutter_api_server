@@ -19,13 +19,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-import cors from "cors";
-
 app.use(
   cors({
     origin: [
-      // "https://flutter-ui-eight.vercel.app",
-      "https://flutter-ui-git-main-irfandhamhudis-projects.vercel.app",
+      "https://flutter-ui-eight.vercel.app", // Untuk aplikasi di Vercel
+      "http://localhost:3000", // Untuk aplikasi di localhost (desktop)
+      "http://10.0.2.2:3000", // Untuk Android Emulator yang mengakses localhost pada komputer host
+      "https://flutter-api-server.vercel.app", // Untuk Android Emulator yang mengakses localhost pada komputer host
     ],
     credentials: true, // Membolehkan cookies dikirimkan
   })
