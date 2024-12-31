@@ -24,6 +24,8 @@ app.use(
     origin: [
       "https://flutter-ui-eight.vercel.app", // Untuk aplikasi di Vercel
       "https://flutter-ui-git-main-irfandhamhudis-projects.vercel.app",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
     ],
     credentials: true, // Membolehkan cookies dikirimkan
   })
