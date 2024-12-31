@@ -25,7 +25,7 @@ app.use(
       "https://flutter-ui-eight.vercel.app", // Untuk aplikasi di Vercel
       "https://flutter-ui-git-main-irfandhamhudis-projects.vercel.app",
       "http://localhost:3000",
-      "http://127.0.0.1:3000",
+      "http://10.0.2.2:3000",
     ],
     credentials: true, // Membolehkan cookies dikirimkan
   })
@@ -41,7 +41,7 @@ app.use("/api/avatar", avatarRoutes);
 app.use("/api/product", productRoutes);
 
 const PORT = process.env.PORT || 5000;
-const HOST = "192.168.1.5";
+const HOST = "192.168.1.2";
 
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
