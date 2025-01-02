@@ -11,6 +11,7 @@ import {
   forgotPassword,
   resetPassword,
   updateProfile,
+  changePassword,
 } from "../controller/userControllers.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -48,5 +49,8 @@ router.post("/reset-password/:resetToken", resetPassword);
 
 // Update Profile By ID
 router.patch("/update-profile", authMiddleware, updateProfile);
+
+// Change Password
+router.patch("/change-password", authMiddleware, changePassword);
 
 export default router;

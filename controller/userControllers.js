@@ -63,23 +63,6 @@ export const registerUser = async (req, res) => {
       role,
     });
 
-    // // Buat JWT token
-    // const token = jwt.sign(
-    //   { id: user._id, username, email },
-    //   process.env.JWT_SECRET,
-    //   {
-    //     expiresIn: "30d",
-    //   }
-    // );
-
-    // // Simpan token ke cookie
-    // res.cookie("jwt", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "strict",
-    //   maxAge: 1000 * 60 * 60 * 24 * 5, //5 days
-    // });
-
     if (user) {
       await sendEmail(user.email, "Verify your account", `${otp}`);
       res.status(201).json({
@@ -147,7 +130,7 @@ export const loginUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Login successful",
-      // token,
+      token,
 
       // user,
     });
@@ -450,6 +433,52 @@ export const resetPassword = async (req, res) => {
       .json({ success: true, message: "Password reset successful" });
   } catch (error) {
     console.error("Error resetting password:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Change password
+export const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Passwords do not match" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Old password is incorrect" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

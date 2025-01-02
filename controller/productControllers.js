@@ -11,7 +11,6 @@ export const createProduct = async (req, res) => {
       // SKU,
       stock,
       category,
-      subcategory,
       description,
       // size,
       status,
@@ -26,7 +25,7 @@ export const createProduct = async (req, res) => {
       !category ||
       !description ||
       !status ||
-      !subcategory
+      !discount
     ) {
       return res
         .status(400)
@@ -80,7 +79,7 @@ export const createProduct = async (req, res) => {
       // SKU,
       stock,
       category,
-      subcategory,
+
       description,
       images: imageUrls,
       // size: sizeArray,
@@ -137,7 +136,7 @@ export const updateProduct = async (req, res) => {
       // SKU,
       stock,
       category,
-      subcategory,
+
       description,
       // size,
       status,
@@ -162,7 +161,7 @@ export const updateProduct = async (req, res) => {
     // if (SKU) product.SKU = SKU;
     if (stock) product.stock = stock;
     if (category) product.category = category;
-    if (subcategory) product.subcategory = subcategory;
+
     if (description) product.description = description;
     if (status) product.status = status;
     if (discount) product.discount = discount;
