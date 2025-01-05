@@ -1,49 +1,31 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userModels.js";
 
-const authMiddleware = async (req, res, next) => {
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  // Periksa apakah header Authorization ada
+  if (!authHeader) {
+    return res
+      .status(401)
+      .json({ message: "Access denied. No token provided." });
+  }
+
+  // Format header: "Bearer <token>"
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "Access denied. Invalid token format." });
+  }
+
   try {
-    // Prioritaskan token dari header Authorization jika ada
-    const authHeader = req.headers.authorization;
-    let token;
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1]; // Ambil token setelah "Bearer"
-    } else if (req.cookies && req.cookies.token) {
-      token = req.cookies.token; // Ambil token dari cookie
-    }
-
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "No token provided, unauthorized" });
-    }
-
     // Verifikasi token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Ambil user berdasarkan ID yang di-decode dari token
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    // Simpan informasi user ke request object
-    req.user = user;
-
-    // Lanjutkan ke middleware berikutnya atau route handler
-    next();
+    req.user = decoded; // Tambahkan data user ke request
+    next(); // Lanjut ke middleware berikutnya
   } catch (error) {
-    console.error("Error in authMiddleware:", error.message);
-
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-      error: error.message,
-    });
+    return res.status(403).json({ message: "Invalid or expired token." });
   }
 };
 
