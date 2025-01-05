@@ -3,14 +3,12 @@ import User from "../models/userModels.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
-    // Prioritaskan token dari header Authorization jika ada
+    // Prioritaskan token dari header Authorization
     const authHeader = req.headers.authorization;
     let token;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1]; // Ambil token setelah "Bearer"
-    } else if (req.cookies && req.cookies.token) {
-      token = req.cookies.token; // Ambil token dari cookie
     }
 
     if (!token) {
