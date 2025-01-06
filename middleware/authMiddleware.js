@@ -4,7 +4,7 @@ import User from "../models/userModels.js";
 const authMiddleware = async (req, res, next) => {
   try {
     // Ambil token dari cookie
-    const token = req.cookies?.auth_token;
+    const token = req.cookies?.token;
 
     if (!token) {
       return res
