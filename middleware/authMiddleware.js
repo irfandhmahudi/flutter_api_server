@@ -3,32 +3,47 @@ import User from "../models/userModels.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
-    // Ambil token dari cookie
-    const token = req.cookies.jwt;
+    // Prioritaskan token dari header Authorization jika ada
+    const authHeader = req.headers.authorization;
+    let token;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1]; // Ambil token setelah "Bearer"
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token; // Ambil token dari cookie
+    }
 
     if (!token) {
       return res
         .status(401)
-        .json({ message: "Unauthorized: No token provided" });
+        .json({ success: false, message: "No token provided, unauthorized" });
     }
 
     // Verifikasi token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Cari user berdasarkan ID dari payload token
+    // Ambil user berdasarkan ID yang di-decode dari token
     const user = await User.findById(decoded.id);
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    // Tambahkan informasi user ke req untuk akses di route berikutnya
+    // Simpan informasi user ke request object
     req.user = user;
 
-    // Lanjutkan ke middleware atau route handler berikutnya
+    // Lanjutkan ke middleware berikutnya atau route handler
     next();
   } catch (error) {
     console.error("Error in authMiddleware:", error.message);
-    return res.status(401).json({ message: "Unauthorized: Invalid token" });
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+      error: error.message,
+    });
   }
 };
 
