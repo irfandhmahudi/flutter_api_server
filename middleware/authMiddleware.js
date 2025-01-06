@@ -2,48 +2,22 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModels.js";
 
 const authMiddleware = async (req, res, next) => {
-  try {
-    // Prioritaskan token dari header Authorization jika ada
-    const authHeader = req.headers.authorization;
-    let token;
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1]; // Ambil token setelah "Bearer"
-    } else if (req.cookies && req.cookies.token) {
-      token = req.cookies.jwt; // Ambil token dari cookie
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id).select("-password");
+      next();
+    } catch (error) {
+      console.error("Error verifying token:", error);
+      res.status(401).json({ success: false, message: "Unauthorized" }); // Kirim respon 401 (Unauthorized)
     }
-
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "No token provided, unauthorized" });
-    }
-
-    // Verifikasi token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Ambil user berdasarkan ID yang di-decode dari token
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    // Simpan informasi user ke request object
-    req.user = user;
-
-    // Lanjutkan ke middleware berikutnya atau route handler
-    next();
-  } catch (error) {
-    console.error("Error in authMiddleware:", error.message);
-
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-      error: error.message,
-    });
+  } else {
+    res.status(401).json({ success: false, message: "Unauthorized" }); // Kirim respon 401 (Unauthorized)
   }
 };
 
