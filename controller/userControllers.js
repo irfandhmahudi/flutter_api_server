@@ -131,7 +131,7 @@ export const loginUser = async (req, res) => {
       success: true,
       message: "Login successful",
       // token,
-      cookie: token,
+      cookie: req.cookies.jwt,
 
       // user,
     });
