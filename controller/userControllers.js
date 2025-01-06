@@ -131,6 +131,7 @@ export const loginUser = async (req, res) => {
       success: true,
       message: "Login successful",
       // token,
+      cookie: token,
 
       // user,
     });
