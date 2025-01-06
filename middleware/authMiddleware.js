@@ -2,22 +2,29 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModels.js";
 
 const authMiddleware = async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
-      next();
-    } catch (error) {
-      console.error("Error verifying token:", error);
-      res.status(401).json({ success: false, message: "Unauthorized" }); // Kirim respon 401 (Unauthorized)
+  try {
+    const token = req.cookies.jwt; // Mendapatkan token dari cookie
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: "No token provided, unauthorized" });
     }
-  } else {
-    res.status(401).json({ success: false, message: "Unauthorized" }); // Kirim respon 401 (Unauthorized)
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id); // Ambil user berdasarkan ID dari token
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    req.user = user; // Menyimpan data user di req
+    next();
+  } catch (error) {
+    res
+      .status(401)
+      .json({ success: false, message: "Invalid token", error: error.message });
   }
 };
 
