@@ -27,6 +27,7 @@ app.use(
       "http://localhost:3000",
       "http://10.0.2.2:3000",
       "http://10.0.2.16:3000",
+      "http://192.168.1.2:3000",
     ],
     credentials: true, // Membolehkan cookies dikirimkan
   })
@@ -42,8 +43,5 @@ app.use("/api/avatar", avatarRoutes);
 app.use("/api/product", productRoutes);
 
 const PORT = process.env.PORT || 5000;
-const HOST = "0.0.0.0";
 
-app.listen(PORT, HOST, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
