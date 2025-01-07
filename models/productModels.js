@@ -10,7 +10,11 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-
+    SKU: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     stock: {
       type: Number,
       required: true,
@@ -34,7 +38,11 @@ const productSchema = new mongoose.Schema(
         publicId: { type: String, required: true },
       },
     ],
-
+    size: {
+      type: [String],
+      required: false,
+      default: [],
+    },
     discount: {
       type: Number,
       required: false,

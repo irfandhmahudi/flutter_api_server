@@ -8,11 +8,11 @@ export const createProduct = async (req, res) => {
     const {
       name,
       price,
-      // SKU,
+      SKU,
       stock,
       category,
       description,
-      // size,
+      size,
       status,
       discount,
     } = req.body;
@@ -23,6 +23,8 @@ export const createProduct = async (req, res) => {
       !price ||
       !stock ||
       !category ||
+      !SKU ||
+      !size ||
       !description ||
       !status ||
       !discount
@@ -47,11 +49,11 @@ export const createProduct = async (req, res) => {
     }
 
     // Konversi size ke array jika diberikan sebagai string
-    // const sizeArray = Array.isArray(size)
-    //   ? size
-    //   : typeof size === "string"
-    //   ? size.split(",").map((s) => s.trim())
-    //   : [];
+    const sizeArray = Array.isArray(size)
+      ? size
+      : typeof size === "string"
+      ? size.split(",").map((s) => s.trim())
+      : [];
 
     // Map file untuk mendapatkan URL dan ID dari Cloudinary dengan nama asli
     const imageUrls = await Promise.all(
@@ -76,13 +78,13 @@ export const createProduct = async (req, res) => {
     const product = new Product({
       name,
       price,
-      // SKU,
+      SKU,
       stock,
       category,
 
       description,
       images: imageUrls,
-      // size: sizeArray,
+      size: sizeArray,
       discount,
       status: status || "published", // Default status: published
     });
@@ -133,12 +135,11 @@ export const updateProduct = async (req, res) => {
     const {
       name,
       price,
-      // SKU,
+      SKU,
       stock,
       category,
-
       description,
-      // size,
+      size,
       status,
       discount,
     } = req.body;
@@ -158,23 +159,23 @@ export const updateProduct = async (req, res) => {
     // Hanya update field yang ada di request body
     if (name) product.name = name;
     if (price) product.price = price;
-    // if (SKU) product.SKU = SKU;
+    if (SKU) product.SKU = SKU;
+    if (size) product.size = size;
     if (stock) product.stock = stock;
     if (category) product.category = category;
-
     if (description) product.description = description;
     if (status) product.status = status;
     if (discount) product.discount = discount;
 
     // Konversi size ke array jika diberikan sebagai string
-    // if (size !== undefined) {
-    //   const sizeArray = Array.isArray(size)
-    //     ? size
-    //     : typeof size === "string"
-    //     ? size.split(",").map((s) => s.trim())
-    //     : [];
-    //   product.size = sizeArray;
-    // }
+    if (size !== undefined) {
+      const sizeArray = Array.isArray(size)
+        ? size
+        : typeof size === "string"
+        ? size.split(",").map((s) => s.trim())
+        : [];
+      product.size = sizeArray;
+    }
 
     // Cek dan upload gambar jika ada
     if (req.files && req.files.length > 0) {
