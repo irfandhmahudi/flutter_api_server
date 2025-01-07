@@ -42,6 +42,6 @@ app.use("/api/avatar", avatarRoutes);
 // Route for products
 app.use("/api/product", productRoutes);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
