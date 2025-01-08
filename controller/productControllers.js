@@ -180,8 +180,17 @@ export const updateProduct = async (req, res) => {
         .json({ success: false, error: "Product not found" });
     }
 
-    const { name, price, SKU, stock, category, description, size, discount } =
-      req.body;
+    const {
+      name,
+      price,
+      SKU,
+      stock,
+      category,
+      description,
+      size,
+      discount,
+      images,
+    } = req.body;
 
     if (discount && (discount < 0 || discount > 100)) {
       return res
