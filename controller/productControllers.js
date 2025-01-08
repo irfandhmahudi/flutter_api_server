@@ -1,21 +1,10 @@
 import Product from "../models/productModels.js";
 import cloudinary from "../config/cloudinary.js";
 
-const validStatuses = ["published", "out stock", "inactive"];
-
 export const createProduct = async (req, res) => {
   try {
-    const {
-      name,
-      price,
-      SKU,
-      stock,
-      category,
-      description,
-      size,
-      status,
-      discount,
-    } = req.body;
+    const { name, price, SKU, stock, category, description, size, discount } =
+      req.body;
 
     // Validation
     if (
@@ -26,7 +15,6 @@ export const createProduct = async (req, res) => {
       !SKU ||
       !size ||
       !description ||
-      !status ||
       !discount
     ) {
       return res
@@ -86,7 +74,6 @@ export const createProduct = async (req, res) => {
       images: imageUrls,
       size: sizeArray,
       discount,
-      status: status || "published", // Default status: published
     });
 
     await product.save();
@@ -140,7 +127,7 @@ export const updateProduct = async (req, res) => {
       category,
       description,
       size,
-      status,
+
       discount,
     } = req.body;
 
@@ -164,7 +151,7 @@ export const updateProduct = async (req, res) => {
     if (stock) product.stock = stock;
     if (category) product.category = category;
     if (description) product.description = description;
-    if (status) product.status = status;
+
     if (discount) product.discount = discount;
 
     // Konversi size ke array jika diberikan sebagai string
