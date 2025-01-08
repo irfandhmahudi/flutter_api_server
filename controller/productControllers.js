@@ -29,13 +29,6 @@ export const createProduct = async (req, res) => {
         .json({ success: false, error: "Discount must be between 0 and 100" });
     }
 
-    // Validasi status
-    if (status && !validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Invalid status provided" });
-    }
-
     // Konversi size ke array jika diberikan sebagai string
     const sizeArray = Array.isArray(size)
       ? size
@@ -130,12 +123,6 @@ export const updateProduct = async (req, res) => {
 
       discount,
     } = req.body;
-
-    if (status && !validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Invalid status provided" });
-    }
 
     if (discount && (discount < 0 || discount > 100)) {
       return res
