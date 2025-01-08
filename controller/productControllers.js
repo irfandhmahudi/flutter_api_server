@@ -204,6 +204,13 @@ export const updateProduct = async (req, res) => {
     // Konversi size ke array jika diberikan sebagai string
     // product.size = JSON.parse(size);
 
+    // Konversi size ke array jika diberikan sebagai string
+    const sizeArray = Array.isArray(size)
+      ? size
+      : typeof size === "string"
+      ? size.split(",").map((s) => s.trim())
+      : [];
+
     // Cek dan upload gambar jika ada
     if (req.files && req.files.length > 0) {
       const imageUrls = await Promise.all(
