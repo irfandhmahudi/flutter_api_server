@@ -199,17 +199,9 @@ export const updateProduct = async (req, res) => {
     if (category) product.category = category;
     if (description) product.description = description;
     if (discount) product.discount = discount;
-    if (size) product.size = size;
 
     // Konversi size ke array jika diberikan sebagai string
-    // product.size = JSON.parse(size);
-
-    // Konversi size ke array jika diberikan sebagai string
-    const sizeArray = Array.isArray(size)
-      ? size
-      : typeof size === "string"
-      ? size.split(",").map((s) => s.trim())
-      : [];
+    product.size = JSON.parse(size);
 
     // Cek dan upload gambar jika ada
     if (req.files && req.files.length > 0) {
