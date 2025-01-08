@@ -62,7 +62,6 @@ export const createProduct = async (req, res) => {
       SKU,
       stock,
       category,
-
       description,
       images: imageUrls,
       size: sizeArray,
@@ -181,17 +180,8 @@ export const updateProduct = async (req, res) => {
         .json({ success: false, error: "Product not found" });
     }
 
-    const {
-      name,
-      price,
-      SKU,
-      stock,
-      category,
-      description,
-      size,
-      discount,
-      priceAfterDiscount,
-    } = req.body;
+    const { name, price, SKU, stock, category, description, size, discount } =
+      req.body;
 
     if (discount && (discount < 0 || discount > 100)) {
       return res
@@ -208,10 +198,18 @@ export const updateProduct = async (req, res) => {
     if (category) product.category = category;
     if (description) product.description = description;
     if (discount) product.discount = discount;
-    if (priceAfterDiscount) product.priceAfterDiscount = priceAfterDiscount;
 
     // Konversi size ke array jika diberikan sebagai string
-    product.size = JSON.parse(size);
+    // product.size = JSON.parse(size);
+
+    // Konversi size ke array jika diberikan sebagai string
+    const sizeArray = Array.isArray(size)
+      ? size
+      : typeof size === "string"
+      ? size.split(",").map((s) => s.trim())
+      : [];
+
+    if (size) product.size = sizeArray;
 
     // Cek dan upload gambar jika ada
     if (req.files && req.files.length > 0) {
