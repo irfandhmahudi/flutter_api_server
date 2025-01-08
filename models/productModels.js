@@ -50,6 +50,9 @@ const productSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
+    priceAfterDiscount: {
+      type: Number, // Menyimpan harga setelah diskon
+    },
   },
   { timestamps: true }
 );

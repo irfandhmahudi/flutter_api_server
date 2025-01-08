@@ -85,7 +85,7 @@ export const getAllProducts = async (req, res) => {
     const products = await Product.find();
 
     // Format harga dan hitung total setelah diskon
-    const formattedProducts = products.map((product) => {
+    const formattedProducts = products.map(async (product) => {
       const price = product.price; // Harga sebelum diskon
       const discount = product.discount || 0; // Diskon (jika ada)
 
@@ -103,6 +103,9 @@ export const getAllProducts = async (req, res) => {
         currency: "IDR",
       }).format(priceAfterDiscount);
 
+      // Menyimpan harga setelah diskon ke dalam database
+      await Product.findByIdAndUpdate(product._id, { priceAfterDiscount });
+
       // Mengembalikan objek produk dengan harga yang telah diformat
       return {
         ...product.toObject(),
@@ -111,8 +114,11 @@ export const getAllProducts = async (req, res) => {
       };
     });
 
+    // Tunggu semua operasi selesai
+    const finalProducts = await Promise.all(formattedProducts);
+
     // Mengirimkan respon dengan data produk yang telah diformat
-    res.status(200).json({ success: true, data: formattedProducts });
+    res.status(200).json({ success: true, data: finalProducts });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
