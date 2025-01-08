@@ -160,11 +160,6 @@ export const getProductById = async (req, res) => {
     // // Mengembalikan objek produk dengan harga yang telah diformat
     res.status(200).json({
       success: true,
-      data: {
-        ...product.toObject(),
-        price: formattedPrice,
-        priceAfterDiscount: formattedPriceAfterDiscount,
-      },
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
