@@ -132,14 +132,7 @@ export const updateProduct = async (req, res) => {
     if (discount) product.discount = discount;
 
     // Konversi size ke array jika diberikan sebagai string
-    if (size !== undefined) {
-      const sizeArray = Array.isArray(size)
-        ? size
-        : typeof size === "string"
-        ? size.split(",").map((s) => s.trim())
-        : [];
-      product.size = sizeArray;
-    }
+    product.size = JSON.parse(size);
 
     // Cek dan upload gambar jika ada
     if (req.files && req.files.length > 0) {
