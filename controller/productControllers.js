@@ -112,17 +112,8 @@ export const updateProduct = async (req, res) => {
         .json({ success: false, error: "Product not found" });
     }
 
-    const {
-      name,
-      price,
-      SKU,
-      stock,
-      category,
-      description,
-      size,
-
-      discount,
-    } = req.body;
+    const { name, price, SKU, stock, category, description, size, discount } =
+      req.body;
 
     if (discount && (discount < 0 || discount > 100)) {
       return res
@@ -138,7 +129,6 @@ export const updateProduct = async (req, res) => {
     if (stock) product.stock = stock;
     if (category) product.category = category;
     if (description) product.description = description;
-
     if (discount) product.discount = discount;
 
     // Konversi size ke array jika diberikan sebagai string
