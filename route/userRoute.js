@@ -33,7 +33,7 @@ router.get("/me", authMiddleware, getMe);
 router.get("/all", getAllUsers);
 
 // Logout
-router.post("/logout", logoutUser);
+router.delete("/logout", logoutUser);
 
 // Verify OTP
 router.post("/verify-otp", verifyOtp);
