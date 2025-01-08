@@ -92,15 +92,19 @@ export const getAllProducts = async (req, res) => {
       // Menghitung harga setelah diskon
       const priceAfterDiscount = price - price * (discount / 100);
 
-      // Format harga dan harga setelah diskon menjadi Rupiah
+      // Format harga dan harga setelah diskon menjadi Rupiah tanpa desimal
       const formattedPrice = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
+        minimumFractionDigits: 0, // Menghilangkan bagian desimal
+        maximumFractionDigits: 0, // Menghilangkan bagian desimal
       }).format(price);
 
       const formattedPriceAfterDiscount = new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
+        minimumFractionDigits: 0, // Menghilangkan bagian desimal
+        maximumFractionDigits: 0, // Menghilangkan bagian desimal
       }).format(priceAfterDiscount);
 
       // Menyimpan harga setelah diskon ke dalam database
