@@ -136,36 +136,36 @@ export const getProductById = async (req, res) => {
         .json({ success: false, error: "Product not found" });
     }
 
-    const price = product.price; // Harga sebelum diskon
-    const discount = product.discount || 0; // Diskon (jika ada)
+    // const price = product.price; // Harga sebelum diskon
+    // const discount = product.discount || 0; // Diskon (jika ada)
 
-    // Menghitung harga setelah diskon
-    const priceAfterDiscount = price - price * (discount / 100);
+    // // Menghitung harga setelah diskon
+    // const priceAfterDiscount = price - price * (discount / 100);
 
-    // Format harga dan harga setelah diskon menjadi Rupiah tanpa desimal
-    const formattedPrice = new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0, // Menghilangkan bagian desimal
-      maximumFractionDigits: 0, // Menghilangkan bagian desimal
-    }).format(price);
+    // // Format harga dan harga setelah diskon menjadi Rupiah tanpa desimal
+    // const formattedPrice = new Intl.NumberFormat("id-ID", {
+    //   style: "currency",
+    //   currency: "IDR",
+    //   minimumFractionDigits: 0, // Menghilangkan bagian desimal
+    //   maximumFractionDigits: 0, // Menghilangkan bagian desimal
+    // }).format(price);
 
-    const formattedPriceAfterDiscount = new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0, // Menghilangkan bagian desimal
-      maximumFractionDigits: 0, // Menghilangkan bagian desimal
-    }).format(priceAfterDiscount);
+    // const formattedPriceAfterDiscount = new Intl.NumberFormat("id-ID", {
+    //   style: "currency",
+    //   currency: "IDR",
+    //   minimumFractionDigits: 0, // Menghilangkan bagian desimal
+    //   maximumFractionDigits: 0, // Menghilangkan bagian desimal
+    // }).format(priceAfterDiscount);
 
-    // Mengembalikan objek produk dengan harga yang telah diformat
-    res.status(200).json({
-      success: true,
-      data: {
-        ...product.toObject(),
-        price: formattedPrice,
-        priceAfterDiscount: formattedPriceAfterDiscount,
-      },
-    });
+    // // Mengembalikan objek produk dengan harga yang telah diformat
+    // res.status(200).json({
+    //   success: true,
+    //   data: {
+    //     ...product.toObject(),
+    //     price: formattedPrice,
+    //     priceAfterDiscount: formattedPriceAfterDiscount,
+    //   },
+    // });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -180,17 +180,8 @@ export const updateProduct = async (req, res) => {
         .json({ success: false, error: "Product not found" });
     }
 
-    const {
-      name,
-      price,
-      SKU,
-      stock,
-      category,
-      description,
-      size,
-      discount,
-      images,
-    } = req.body;
+    const { name, price, SKU, stock, category, description, size, discount } =
+      req.body;
 
     if (discount && (discount < 0 || discount > 100)) {
       return res
