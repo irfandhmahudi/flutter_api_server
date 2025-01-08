@@ -1,7 +1,7 @@
 import Product from "../models/productModels.js";
 import cloudinary from "../config/cloudinary.js";
 
-const validStatuses = ["published", "out stock", "inactive"];
+const validStatuses = ["Published", "Inactive", "Out of Stock"];
 
 export const createProduct = async (req, res) => {
   try {
