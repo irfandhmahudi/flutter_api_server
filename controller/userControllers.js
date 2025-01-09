@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 import sendForgotPasswordEmail from "../utils/sendForgot.js";
+import { triggerNotification } from "../utils/notifyHelper.js";
 
 // Register user
 export const registerUser = async (req, res) => {
@@ -65,6 +66,7 @@ export const registerUser = async (req, res) => {
 
     if (user) {
       await sendEmail(user.email, "Verify your account", `${otp}`);
+
       res.status(201).json({
         success: true,
         message: "User registered. Check your email for OTP.",
@@ -368,6 +370,12 @@ export const updateProfile = async (req, res) => {
     user.email = email || user.email;
 
     await user.save();
+    // Tambahkan ini dalam `updateProfile` setelah profil diperbarui
+    await createNotification(
+      req.user.id,
+      "Your profile has been updated successfully.",
+      "profile"
+    );
 
     res.status(200).json({
       success: true,
@@ -454,7 +462,7 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user);
     if (!user) {
       return res
         .status(404)
@@ -473,6 +481,13 @@ export const changePassword = async (req, res) => {
 
     user.password = hashedPassword;
     await user.save();
+
+    // Setelah password berhasil diubah, trigger notifikasi otomatis
+    triggerNotification(
+      user._id,
+      `Your password has been changed successfully.`,
+      "security"
+    );
 
     res
       .status(200)

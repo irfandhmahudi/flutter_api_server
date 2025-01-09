@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./route/userRoute.js";
 import avatarRoutes from "./route/avatarRoute.js";
 import productRoutes from "./route/productRoute.js";
+import notifyRoutes from "./route/notifyRoute.js";
 
 dotenv.config();
 connectDB();
@@ -42,6 +43,9 @@ app.use("/api/avatar", avatarRoutes);
 
 // Route for products
 app.use("/api/product", productRoutes);
+
+// Route for notifications
+app.use("/api/notify", notifyRoutes);
 
 const PORT = process.env.PORT || 5000;
 
