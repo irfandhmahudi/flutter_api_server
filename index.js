@@ -9,6 +9,8 @@ import userRoutes from "./route/userRoute.js";
 import avatarRoutes from "./route/avatarRoute.js";
 import productRoutes from "./route/productRoute.js";
 import notifyRoutes from "./route/notifyRoute.js";
+import cartRoutes from "./route/cartRoute.js";
+import couponRoutes from "./route/coupunRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -46,6 +48,12 @@ app.use("/api/product", productRoutes);
 
 // Route for notifications
 app.use("/api/notify", notifyRoutes);
+
+// Route for cart
+app.use("/api/cart", cartRoutes);
+
+// Route for coupons
+app.use("/api/coupons", couponRoutes);
 
 const PORT = process.env.PORT || 5000;
 
