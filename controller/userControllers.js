@@ -66,6 +66,12 @@ export const registerUser = async (req, res) => {
 
     if (user) {
       await sendEmail(user.email, "Verify your account", `${otp}`);
+      // Setelah password berhasil diubah, trigger notifikasi otomatis
+      triggerNotification(
+        user._id,
+        `Welcome new user, ${user.username}`,
+        "account"
+      );
 
       res.status(201).json({
         success: true,
@@ -370,11 +376,11 @@ export const updateProfile = async (req, res) => {
     user.email = email || user.email;
 
     await user.save();
-    // Tambahkan ini dalam `updateProfile` setelah profil diperbarui
-    await createNotification(
-      req.user.id,
-      "Your profile has been updated successfully.",
-      "profile"
+    // Setelah password berhasil diubah, trigger notifikasi otomatis
+    triggerNotification(
+      user._id,
+      `Your profile has been changed successfully.`,
+      "security"
     );
 
     res.status(200).json({
