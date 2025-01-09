@@ -13,7 +13,7 @@ export const createProduct = async (req, res) => {
       !stock ||
       !category ||
       !SKU ||
-      !size ||
+      // !size ||
       !description ||
       !discount
     ) {
