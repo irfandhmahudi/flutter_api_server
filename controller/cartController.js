@@ -53,21 +53,21 @@ export const addCart = async (req, res) => {
   }
 };
 
-// Menghapus semua item dalam keranjang
-export const removeAllCart = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+// // Menghapus semua item dalam keranjang
+// export const removeAllCart = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user.id);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
 
-    user.cart = []; // Kosongkan keranjang
-    await user.save();
-    res.status(200).json({ message: "All items removed from cart" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+//     user.cart = []; // Kosongkan keranjang
+//     await user.save();
+//     res.status(200).json({ message: "All items removed from cart" });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 // Menghapus item dalam keranjang
 export const removeCart = async (req, res) => {
@@ -214,7 +214,7 @@ export const updateCartProductQuantity = async (req, res) => {
   if (!productId || quantity === undefined) {
     return res.status(400).json({
       success: false,
-      message: "Product ID and quantity are required",
+      message: "Product ID dan quantity harus disertakan",
     });
   }
 
@@ -224,117 +224,58 @@ export const updateCartProductQuantity = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found" });
+        .json({ success: false, message: "User tidak ditemukan" });
     }
 
     // Cek apakah produk ada dalam keranjang
-    const cartItem = user.cart.find(
+    const cartItemIndex = user.cart.findIndex(
       (item) => item.productId.toString() === productId
     );
-    if (!cartItem) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found in cart" });
+
+    if (cartItemIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Produk tidak ditemukan di keranjang",
+      });
     }
 
-    // Perbarui quantity
-    cartItem.quantity = quantity;
+    // Jika quantity kurang dari 1, hapus item dari keranjang
+    if (quantity < 1) {
+      user.cart.splice(cartItemIndex, 1); // Hapus produk dari keranjang
+      await user.save();
 
-    // Ambil harga produk dari database untuk memastikan akurasi
+      return res.status(200).json({
+        success: true,
+        message: "Produk berhasil dihapus dari keranjang",
+        cart: user.cart,
+      });
+    }
+
+    // Ambil data produk untuk memastikan akurasi harga
     const product = await Product.findById(productId);
     if (!product) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found in database" });
+      return res.status(404).json({
+        success: false,
+        message: "Produk tidak ditemukan di database",
+      });
     }
 
-    // Hitung ulang total harga item
-    cartItem.totalPrice = product.price * quantity;
+    // Perbarui quantity dan total harga
+    user.cart[cartItemIndex].quantity = quantity;
+    user.cart[cartItemIndex].totalPrice = product.price * quantity;
 
     // Simpan perubahan
     await user.save();
 
     res.status(200).json({
       success: true,
-      message: "Cart updated successfully",
+      message: "Keranjang berhasil diperbarui",
       cart: user.cart,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error updating cart quantity",
-      error: error.message,
-    });
-  }
-};
-
-// Mengurangi jumlah produk dalam keranjang
-export const decreaseCartProductQuantity = async (req, res) => {
-  const { productId, quantity } = req.body;
-
-  // Validasi input
-  if (!productId || quantity === undefined || quantity <= 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Product ID and valid quantity are required",
-    });
-  }
-
-  try {
-    // Mendapatkan user berdasarkan ID dari token
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    // Cek apakah produk ada dalam keranjang
-    const cartItem = user.cart.find(
-      (item) => item.productId.toString() === productId
-    );
-    if (!cartItem) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found in cart",
-      });
-    }
-
-    // Cek jika kuantitas yang diinginkan lebih kecil dari kuantitas yang ada di keranjang
-    if (cartItem.quantity <= quantity) {
-      return res.status(400).json({
-        success: false,
-        message: "Cannot decrease quantity below 1",
-      });
-    }
-
-    // Kurangi kuantitas produk di keranjang
-    cartItem.quantity -= quantity;
-
-    // Ambil harga produk untuk menghitung total harga baru
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found in database",
-      });
-    }
-
-    // Hitung ulang total harga produk di keranjang
-    cartItem.totalPrice = product.price * cartItem.quantity;
-
-    // Simpan perubahan
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Product quantity decreased successfully",
-      cart: user.cart,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error decreasing product quantity",
+      message: "Terjadi kesalahan saat memperbarui keranjang",
       error: error.message,
     });
   }
