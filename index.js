@@ -11,6 +11,8 @@ import productRoutes from "./route/productRoute.js";
 import notifyRoutes from "./route/notifyRoute.js";
 import cartRoutes from "./route/cartRoute.js";
 import couponRoutes from "./route/coupunRoutes.js";
+import ongkirController from "./controller/ongkirController.js";
+import orderRoutes from "./route/orderRoute.js";
 
 dotenv.config();
 connectDB();
@@ -54,6 +56,15 @@ app.use("/api/cart", cartRoutes);
 
 // Route for coupons
 app.use("/api/coupons", couponRoutes);
+
+// Route for ongkir
+app.post("/api/ongkir/cost", ongkirController.getOngkir);
+app.get("/api/ongkir/provinces", ongkirController.getProvinces);
+app.get("/api/ongkir/cities", ongkirController.getCities);
+app.get("/api/ongkir/cities/:provinceId", ongkirController.getCitiesByProvince);
+
+// Route for order
+app.use("/api/order", orderRoutes);
 
 const PORT = process.env.PORT || 5000;
 

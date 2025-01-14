@@ -42,7 +42,6 @@ export const addCart = async (req, res) => {
         productId,
         quantity,
         size,
-        totalPrice, // Tambahkan total harga
       });
     }
 
@@ -52,22 +51,6 @@ export const addCart = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-// // Menghapus semua item dalam keranjang
-// export const removeAllCart = async (req, res) => {
-//   try {
-//     const user = await User.findById(req.user.id);
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     user.cart = []; // Kosongkan keranjang
-//     await user.save();
-//     res.status(200).json({ message: "All items removed from cart" });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 // Menghapus item dalam keranjang
 export const removeCart = async (req, res) => {
