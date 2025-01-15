@@ -1,8 +1,5 @@
 import Order from "../models/orderModel.js";
-import fs from "fs";
-import cloudinary from "../config/cloudinary.js";
-import User from "../models/userModels.js";
-
+import Product from "../models/productModels.js";
 export const createOrder = async (orderData) => {
   try {
     // Membuat order baru
@@ -36,91 +33,20 @@ export const getAllOrders = async () => {
   }
 };
 
-// Fungsi untuk mengupload bukti pembayaran dan memperbarui status
-export const uploadPaymentProof = async (req, res) => {
+export const updateProductStock = async (productId, quantity) => {
   try {
-    const { orderId } = req.params;
-
-    // Validasi orderId
-    if (!orderId) {
-      return res.status(400).json({ message: "Order ID is required" });
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error(`Product with ID ${productId} not found`);
     }
 
-    // Validasi file bukti pembayaran
-    if (!req.file) {
-      return res.status(400).json({ message: "Payment proof is required" });
+    if (product.stock < quantity) {
+      throw new Error(`Insufficient stock for product: ${product.name}`);
     }
 
-    // Lakukan update order
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      {
-        paymentProof: req.file.path,
-        paymentStatus: "waiting",
-      },
-      { new: true }
-    );
-
-    // Validasi apakah order ditemukan
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    res.status(200).json({
-      message: "Payment proof uploaded successfully",
-      order: updatedOrder,
-    });
+    product.stock -= quantity;
+    await product.save();
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Error uploading payment proof: " + error.message });
-  }
-};
-
-export const verifyPaymentProof = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { paymentStatus } = req.body;
-
-    // Validasi paymentStatus
-    if (!["approved", "rejected"].includes(paymentStatus)) {
-      return res.status(400).json({ message: "Invalid payment status" });
-    }
-
-    // Update status pembayaran
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      {
-        paymentStatus,
-        status_pembayaran: paymentStatus === "approved" ? "paid" : "unpaid",
-      },
-      { new: true }
-    );
-
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    // Pastikan user ada
-    const user = req.user || (await User.findById(updatedOrder.userId)); // Ambil dari req.user atau database
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Kirim notifikasi
-    const message =
-      paymentStatus === "approved"
-        ? `Your payment has been approved. Order ID: ${updatedOrder._id}`
-        : `Your payment has been rejected. Order ID: ${updatedOrder._id}`;
-
-    triggerNotification(user._id, message, "payment");
-
-    res.status(200).json({
-      message: "Payment status updated successfully",
-      order: updatedOrder,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    throw new Error("Error updating product stock: " + error.message);
   }
 };

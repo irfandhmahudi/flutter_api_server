@@ -62,7 +62,6 @@ const orderSchema = new mongoose.Schema({
   },
   paymentProof: {
     type: String, // URL gambar bukti pembayaran
-    required: false,
   },
   paymentStatus: {
     type: String,

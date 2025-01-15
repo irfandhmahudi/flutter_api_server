@@ -4,9 +4,17 @@ import User from "../models/userModels.js";
 
 // Controller untuk membuat pesanan
 export const createOrder = async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (user.cart.length === 0) {
+    return res.status(400).json({ message: "Cart is empty" });
+  }
+
   try {
     const {
-      // userId,
       cart,
       total,
       discount,
@@ -19,7 +27,6 @@ export const createOrder = async (req, res) => {
     } = req.body;
 
     const orderData = {
-      // userId,
       origin,
       destination,
       weight,
@@ -35,9 +42,16 @@ export const createOrder = async (req, res) => {
     // Panggil service untuk membuat order
     const newOrder = await OrderService.createOrder(orderData);
 
-    // Kirimkan notifikasi ke user
-    const user = req.user;
+    // Perbarui stok produk berdasarkan cart
+    for (const item of user.cart) {
+      await OrderService.updateProductStock(item.productId, item.quantity);
+    }
 
+    // Kosongkan keranjang belanja
+    user.cart = [];
+    await user.save();
+
+    // Kirimkan notifikasi ke user
     triggerNotification(
       user._id,
       `Your order has been placed successfully. Order ID: ${newOrder._id}`,
@@ -74,60 +88,6 @@ export const getAllOrders = async (req, res) => {
   try {
     const orders = await OrderService.getAllOrders();
     res.status(200).json(orders);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-export const uploadPaymentProof = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-
-    // Validasi apakah file bukti pembayaran ada
-    if (!req.file) {
-      return res.status(400).json({ message: "Payment proof is required" });
-    }
-
-    // Panggil fungsi uploadPaymentProof dari OrderService
-    const updatedOrder = await OrderService.uploadPaymentProof(
-      orderId,
-      req.file
-    );
-
-    res.status(200).json({
-      message: "Payment proof uploaded successfully",
-      order: updatedOrder,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Controller untuk admin untuk memverifikasi bukti pembayaran
-export const verifyPaymentProof = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { paymentStatus } = req.body; // 'approved' or 'rejected'
-
-    // Panggil fungsi verifyPaymentProof dari OrderService
-    const updatedOrder = await OrderService.verifyPaymentProof(
-      orderId,
-      paymentStatus
-    );
-
-    // Kirimkan notifikasi ke user jika pembayaran disetujui atau ditolak
-    const user = await User.findById(updatedOrder.userId); // Asumsi bahwa Order memiliki field userId
-    const message =
-      paymentStatus === "approved"
-        ? `Your payment has been approved. Order ID: ${updatedOrder._id}`
-        : `Your payment has been rejected. Order ID: ${updatedOrder._id}`;
-
-    triggerNotification(user._id, message, "payment");
-
-    res.status(200).json({
-      message: "Payment status updated successfully",
-      order: updatedOrder,
-    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

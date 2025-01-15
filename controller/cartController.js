@@ -1,6 +1,5 @@
 import User from "../models/userModels.js";
 import Product from "../models/productModels.js"; // Asumsi Anda punya model Product
-import Coupon from "../models/coupunModels.js";
 
 // Menambahkan item ke keranjang
 export const addCart = async (req, res) => {
@@ -27,9 +26,6 @@ export const addCart = async (req, res) => {
     }
 
     const productPrice = product.price; // Harga produk
-
-    // Hitung total harga berdasarkan quantity
-    const totalPrice = productPrice * quantity;
 
     if (existingProductIndex !== -1) {
       // Jika produk dan ukuran sudah ada, perbarui jumlahnya dan total harga
@@ -83,52 +79,25 @@ export const removeCart = async (req, res) => {
     // Simpan perubahan ke database
     await user.save();
 
-    // Hitung ulang total harga setelah penghapusan
-    const updatedCartDetails = await User.findById(req.user.id)
-      .populate("cart.productId", "price")
-      .exec();
-
-    const total = updatedCartDetails.cart.reduce(
-      (acc, item) => acc + item.productId.price * item.quantity,
-      0
-    );
-
     res.status(200).json({
       message: "Product removed from cart",
-      cart: updatedCartDetails.cart,
-      total,
+      cart: user.cart,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Mengambil produk dalam keranjang
+// Mendapatkan produk dalam keranjang
 export const getCartProducts = async (req, res) => {
   try {
     // Mengambil user berdasarkan ID, dan populate cart dengan data produk
     const user = await User.findById(req.user.id)
-      .populate("cart.productId", "name price images sizes SKU discount") // Populate 'sizes' untuk mengakses pilihan ukuran
+      .populate("cart.productId", "name price images sizes SKU discount") // Tambahkan 'discount'
       .exec();
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
-    }
-
-    // Ambil kode kupon dari body request (jika ada)
-    const { codeName } = req.body;
-
-    // Validasi kupon jika diberikan
-    let discountPercentage = 0;
-    if (codeName) {
-      const coupon = await Coupon.findOne({ codeName });
-      if (!coupon) {
-        return res.status(404).json({ message: "Coupon not found" });
-      }
-      if (new Date(coupon.endDate) < new Date()) {
-        return res.status(400).json({ message: "Coupon has expired" });
-      }
-      discountPercentage = coupon.discountPercentage; // Diskon dari kupon
     }
 
     // Format cart untuk menambahkan informasi gambar, harga, quantity, dan ukuran
@@ -144,45 +113,45 @@ export const getCartProducts = async (req, res) => {
       // Mendapatkan ukuran yang dipilih oleh user
       const selectedSize = item.size || "N/A"; // "N/A" jika ukuran tidak dipilih
 
-      // Harga setelah diskon produk (jika ada diskon produk)
+      // Hitung harga satuan setelah diskon produk (jika ada diskon)
       const discountedPrice = product.discount
         ? product.price - (product.price * product.discount) / 100
         : product.price;
 
-      // Total harga per item setelah diskon produk
+      // subtotal
+      const subtotal = discountedPrice * item.quantity;
+
+      // Total harga per item setelah diskon
       const itemTotalPrice = discountedPrice * item.quantity;
 
       return {
         productId: product._id,
         name: product.name,
         price: product.price,
+        discount: product.discount || 0, // Persentase diskon produk
+        discountedPrice, // Harga satuan setelah diskon
         image: productImage, // Menampilkan gambar pertama
         quantity: item.quantity, // Kuantitas produk dalam cart
         size: selectedSize, // Ukuran yang dipilih oleh user
         SKU: product.SKU,
-        totalPrice: itemTotalPrice, // Total harga per item setelah diskon
-        discount: product.discount, // Persentase diskon produk
-        discountedPrice: discountedPrice, // Harga satuan setelah diskon produk
+        itemPrice: itemTotalPrice, // Total harga per item
+        subtotal,
       };
     });
 
-    // Hitung total harga keseluruhan sebelum diskon kupon
-    const totalBeforeCoupon = cartDetails.reduce(
-      (total, item) => total + item.totalPrice,
+    // subtotal
+    const subtotal = cartDetails.reduce((acc, item) => acc + item.subtotal, 0);
+
+    // Hitung total keseluruhan harga
+    const totalPrice = cartDetails.reduce(
+      (acc, item) => acc + item.itemPrice,
       0
     );
 
-    // Hitung diskon dari kupon
-    const couponDiscountAmount = (totalBeforeCoupon * discountPercentage) / 100;
-
-    // Hitung total harga setelah diskon kupon
-    const grandTotalPrice = totalBeforeCoupon - couponDiscountAmount;
-
     res.status(200).json({
       cart: cartDetails,
-      subtotal: totalBeforeCoupon,
-      couponDiscount: couponDiscountAmount,
-      total: grandTotalPrice,
+      totalPrice, // Total harga keseluruhan
+      subtotal,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
